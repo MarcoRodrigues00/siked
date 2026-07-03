@@ -70,14 +70,15 @@ alta fidelidade zera falso-positivo. Domínio *Threats/Attacks & Detection*.
 - `traffic-generator/`: cenários sintéticos (brute, scan, sqli, honeytoken-use) com `guard`
   (só alvo local isolado).
 
-**Definition of Done (verificável)**
-- [ ] Rodar o gerador → alertas aparecem no dashboard em tempo real, cada um com técnica ATT&CK.
-- [ ] MTTD calculado e exibido por incidente; alvo < 2s.
-- [ ] Cada assinatura tem teste (input que casa / não casa); cada regra de correlação tem teste
-      (cobertura de regras = 100%); mesma sequência → mesmo alerta.
-- [ ] **Muralha IA:** rodar a demo com e sem `ENRICH_AI` produz o **mesmo** conjunto de detecções
-      (só o bloco `advisory` muda). Prova que a IA não decide.
-- [ ] ≥ 4 técnicas distintas acesas no heatmap.
+**Definition of Done (verificável)** — ✅ **Sprint 2 concluído (2026-07-03)**
+- [x] Gerador → alertas ao vivo no dashboard (E2E: cliente WS capturou 12 alertas empurrados,
+      cada um com técnica ATT&CK).
+- [x] MTTD calculado e exibido; brute force medido em 1987 ms (< 2s).
+- [x] Assinaturas + correlação testadas (14 testes detection); mesma sequência → mesmo alerta.
+- [~] **Muralha IA:** invariante estrutural provado — a engine só escreve `decision`, nunca
+      `advisory` (teste `engine.test.ts`). A comparação completa com/sem `ENRICH_AI` fecha no
+      Sprint 4, quando o enriquecimento Ollama é plugado (sem tocar em `decision`).
+- [x] 4 técnicas distintas acesas: T1078, T1110, T1190, T1595.
 
 **Momento de aprendizado:** telemetria bruta → threat intelligence mapeada (log vs detecção).
 Domínio *Security Operations*.

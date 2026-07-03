@@ -1,0 +1,8 @@
+node_modules
+dist
+ui/node_modules
+ui/dist
+npm-debug.log
+.env
+.env.*
+*.log
