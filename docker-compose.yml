@@ -84,6 +84,19 @@ services:
     read_only: true
     restart: unless-stopped
 
+  traffic-generator:                     # [Sprint 2] ataque sintético — on-demand
+    build: ./traffic-generator
+    profiles: ["demo"]                   # roda com: docker compose --profile demo up traffic-generator
+    env_file: .env
+    environment:
+      TARGET_URL: http://deception:3001  # guardrail: só alvo local isolado
+    networks:
+      - siked_edge                       # ataca as iscas pela borda, como um adversário
+    depends_on:
+      - deception
+    user: "1000:1000"
+    restart: "no"
+
   ollama:                                # [Sprint 4] IA local, opt-in — profile
     image: ollama/ollama:latest
     profiles: ["ai"]                     # sobe só com: docker compose --profile ai up
