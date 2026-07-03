@@ -1,0 +1,9 @@
+# T1078 — Valid Accounts. Uso de um honeytoken plantado = credencial "vazada"
+# sendo usada. Sinal de altíssima confiança (o token é falso e único).
+- id: sig-honeytoken-use
+  msg: "Uso de honeytoken plantado (credencial falsa coletada da isca)"
+  match:
+    honeytoken: true
+  attack: { tactic: TA0001, technique: T1078 }
+  severity: critical
+  references: ["CWE-798"]

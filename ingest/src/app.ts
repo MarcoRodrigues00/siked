@@ -6,6 +6,7 @@ import { config } from './config.js';
 import { logger } from './logger.js';
 import { RawEventInput, normalize } from './normalize.js';
 import type { Store } from './store.js';
+import type { Publish } from './bus.js';
 
 function tokenMatches(provided: string | undefined): boolean {
   if (!provided) return false;
@@ -20,7 +21,7 @@ function tokenMatches(provided: string | undefined): boolean {
  * (`POST /events`, autenticado por INGEST_TOKEN — ADR-0003), normaliza,
  * sanitiza e persiste no store append-only.
  */
-export function createApp(store: Store) {
+export function createApp(store: Store, publish: Publish = () => {}) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
@@ -49,6 +50,7 @@ export function createApp(store: Store) {
         maxLen: config.PAYLOAD_SNIPPET_MAX,
       });
       const record = store.append(event);
+      publish(record); // barramento -> detecção (fire-and-forget)
       logger.info('event_ingested', {
         seq: record.seq,
         src_ip: record.src_ip,

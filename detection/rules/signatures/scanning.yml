@@ -1,0 +1,32 @@
+# T1595 — Active Scanning. Acesso a caminhos que só um scanner/atacante pediria.
+- id: sig-scan-wp-login
+  msg: "Acesso a /wp-login.php (scanner WordPress)"
+  match:
+    path_re: "^/wp-login\\.php$"
+  attack: { tactic: TA0043, technique: T1595 }
+  severity: low
+  references: ["hp_wp_login"]
+
+- id: sig-scan-env
+  msg: "Tentativa de ler /.env (busca por segredos expostos)"
+  match:
+    path_re: "^/\\.env$"
+  attack: { tactic: TA0043, technique: T1595 }
+  severity: medium
+  references: ["hp_env"]
+
+- id: sig-scan-phpmyadmin
+  msg: "Acesso a /phpmyadmin"
+  match:
+    path_re: "^/phpmyadmin"
+  attack: { tactic: TA0043, technique: T1595 }
+  severity: low
+  references: ["hp_phpmyadmin"]
+
+- id: sig-scan-backup
+  msg: "Tentativa de baixar backup exposto (/backup.zip)"
+  match:
+    path_re: "^/backup\\.zip$"
+  attack: { tactic: TA0043, technique: T1595 }
+  severity: medium
+  references: ["hp_backup"]

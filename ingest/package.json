@@ -16,6 +16,7 @@
     "@siked/shared": "file:../shared",
     "better-sqlite3": "^11.8.1",
     "express": "^4.21.2",
+    "ioredis": "^5.4.2",
     "helmet": "^8.0.0",
     "winston": "^3.17.0",
     "zod": "^3.24.1"

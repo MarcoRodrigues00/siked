@@ -1,0 +1,7 @@
+{
+  "T1595": "D3-NTA (Network Traffic Analysis) — bloquear IP de origem",
+  "T1190": "D3-IAA (Inbound Application Analysis) — isolar/analisar a requisição; bloquear IP",
+  "T1110": "D3-AL (Account Locking) — reforçar rate-limit e bloquear IP de origem",
+  "T1078": "D3-ANCI (Authentication Cache Invalidation) — revogar credencial e isolar sessão",
+  "T1592": "D3-NTA (Network Traffic Analysis) — monitorar e correlacionar o recon"
+}

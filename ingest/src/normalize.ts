@@ -20,7 +20,20 @@ export const RawEventInput = z.object({
 
 export type RawEventInput = z.infer<typeof RawEventInput>;
 
-/** Bruto -> evento canônico: carimba timestamp, sanitiza e assina para dedup. */
+/**
+ * Normaliza percent-encoding e `+` antes do matching (como um IDS faz): assim
+ * `UNION%20SELECT` vira `UNION SELECT` e as assinaturas casam a intenção real.
+ * Falha de decode (input malformado) cai de volta no original.
+ */
+export function urlNormalize(raw: string): string {
+  try {
+    return decodeURIComponent(raw.replace(/\+/g, ' '));
+  } catch {
+    return raw;
+  }
+}
+
+/** Bruto -> evento canônico: carimba timestamp, normaliza, sanitiza e assina para dedup. */
 export function normalize(input: RawEventInput, opts: { nowIso: string; maxLen: number }): CanonicalEvent {
   return CanonicalEvent.parse({
     timestamp: opts.nowIso,
@@ -30,7 +43,8 @@ export function normalize(input: RawEventInput, opts: { nowIso: string; maxLen: 
     user_agent: input.user_agent,
     honeypot_id: input.honeypot_id,
     token_id: input.token_id,
-    payload_snippet: sanitize(input.payload, opts.maxLen),
+    payload_snippet: sanitize(urlNormalize(input.payload), opts.maxLen),
+    // assinatura de dedup sobre o payload cru (antes da normalização)
     raw_signature: payloadSignature(input.method, input.path, input.payload),
   });
 }

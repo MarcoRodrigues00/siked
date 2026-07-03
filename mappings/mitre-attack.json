@@ -1,0 +1,7 @@
+{
+  "T1595": { "name": "Active Scanning", "tactic": "TA0043", "tactic_name": "Reconnaissance" },
+  "T1190": { "name": "Exploit Public-Facing Application", "tactic": "TA0001", "tactic_name": "Initial Access" },
+  "T1110": { "name": "Brute Force", "tactic": "TA0006", "tactic_name": "Credential Access" },
+  "T1078": { "name": "Valid Accounts", "tactic": "TA0001", "tactic_name": "Initial Access" },
+  "T1592": { "name": "Gather Victim Host Information", "tactic": "TA0043", "tactic_name": "Reconnaissance" }
+}

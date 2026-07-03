@@ -52,12 +52,12 @@ services:
     restart: unless-stopped
 
   detection:                             # [Sprint 2] motor de regras + ATT&CK
-    build: ./detection
+    build:
+      context: .                         # raiz: precisa de shared/ + mappings/
+      dockerfile: detection/Dockerfile
     env_file: .env
-    volumes:
-      - siked_data:/data:ro              # lê o índice (read-only)
     networks:
-      - siked_core
+      - siked_core                       # consome siked:events, publica siked:alerts
     depends_on:
       - redis
     user: "1000:1000"

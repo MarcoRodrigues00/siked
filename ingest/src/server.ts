@@ -3,12 +3,14 @@ import { config } from './config.js';
 import { logger } from './logger.js';
 import { Store } from './store.js';
 import { createApp } from './app.js';
+import { createPublisher } from './bus.js';
 
 const jsonlPath = config.EVENTS_JSONL ?? join(config.DATA_DIR, 'events.jsonl');
 const sqlitePath = config.INDEX_SQLITE ?? join(config.DATA_DIR, 'index.sqlite');
 
 const store = new Store(jsonlPath, sqlitePath);
-const app = createApp(store);
+const publisher = createPublisher();
+const app = createApp(store, publisher.publish);
 
 const server = app.listen(config.INGEST_PORT, () => {
   const chain = store.verifyChain();
@@ -24,7 +26,7 @@ for (const sig of ['SIGTERM', 'SIGINT'] as const) {
     logger.info('shutdown', { signal: sig });
     server.close(() => {
       store.close();
-      process.exit(0);
+      void publisher.close().finally(() => process.exit(0));
     });
   });
 }

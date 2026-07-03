@@ -8,6 +8,9 @@ const EnvSchema = z.object({
   DATA_DIR: z.string().default('/data'),
   EVENTS_JSONL: z.string().optional(),
   INDEX_SQLITE: z.string().optional(),
+  // barramento interno (ADR-0003): publica cada evento normalizado
+  REDIS_URL: z.string().default('redis://redis:6379'),
+  EVENTS_CHANNEL: z.string().default('siked:events'),
   // limite de payload sanitizado guardado no evento canônico
   PAYLOAD_SNIPPET_MAX: z.coerce.number().int().positive().max(2048).default(512),
 });
