@@ -39,7 +39,9 @@ services:
 
   # ─── PONTE DE INGESTÃO (edge↔core) ───────────────────────────────────────
   ingest:                                # [Sprint 1] normalização + store
-    build: ./ingest
+    build:
+      context: .                         # raiz: precisa de shared/ (dep file:)
+      dockerfile: ingest/Dockerfile
     env_file: .env
     volumes:
       - siked_data:/data                 # custódia JSONL + índice SQLite
