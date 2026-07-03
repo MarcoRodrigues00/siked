@@ -1,0 +1,105 @@
+# siked · orquestração multi-serviço com contenção por rede (ADR-0001, ADR-0008)
+# Um comando sobe tudo: `docker compose up --build`
+#
+# Redes:
+#   siked_edge  — exposta na demo; onde as iscas e o app recebem tráfego
+#   siked_core  — INTERNA (internal: true): sem rota para host/internet; núcleo de análise
+#   siked_mgmt  — bridge só para a porta do dashboard (console do SOC)
+#
+# Serviços marcados [Sprint N] são preenchidos no respectivo sprint; a topologia de rede e
+# o app já são o entregável do Sprint 0.
+
+services:
+  # ─── EDGE ────────────────────────────────────────────────────────────────
+  app:                                   # [Sprint 0] app real seguro
+    build: ./app
+    env_file: .env
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    networks:
+      - siked_edge                       # SÓ edge — não alcança o core (ADR-0008 regra 1)
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
+  deception:                             # [Sprint 1] honeypots + honeytokens
+    build: ./deception
+    env_file: .env
+    ports:
+      - "${DECEPTION_PORT:-3001}:3001"
+    networks:
+      - siked_edge                       # SÓ edge — emite eventos batendo em ingest (POST /events)
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
+  # ─── PONTE DE INGESTÃO (edge↔core) ───────────────────────────────────────
+  ingest:                                # [Sprint 1] normalização + store
+    build: ./ingest
+    env_file: .env
+    volumes:
+      - siked_data:/data                 # custódia JSONL + índice SQLite
+    networks:
+      - siked_edge                       # único ponto do core exposto ao edge: POST /events autenticado
+      - siked_core                       # escreve store + publica no barramento redis
+    user: "1000:1000"
+    restart: unless-stopped
+
+  detection:                             # [Sprint 2] motor de regras + ATT&CK
+    build: ./detection
+    env_file: .env
+    volumes:
+      - siked_data:/data:ro              # lê o índice (read-only)
+    networks:
+      - siked_core
+    depends_on:
+      - redis
+    user: "1000:1000"
+    restart: unless-stopped
+
+  dashboard:                             # [Sprint 2] WS + UI React; ponte core↔mgmt
+    build: ./dashboard
+    env_file: .env
+    ports:
+      - "${DASHBOARD_PORT:-8080}:8080"   # única porta publicada do núcleo (console SOC)
+    networks:
+      - siked_core                       # recebe alertas
+      - siked_mgmt                       # exposto ao browser do analista
+    depends_on:
+      - redis
+    user: "1000:1000"
+    restart: unless-stopped
+
+  redis:                                 # [Sprint 2] barramento pub/sub interno
+    image: redis:7-alpine
+    networks:
+      - siked_core
+    user: "999:999"
+    read_only: true
+    restart: unless-stopped
+
+  ollama:                                # [Sprint 4] IA local, opt-in — profile
+    image: ollama/ollama:latest
+    profiles: ["ai"]                     # sobe só com: docker compose --profile ai up
+    volumes:
+      - ollama_models:/root/.ollama
+    networks:
+      - siked_core                       # sem egress: modelo pré-baixado no volume
+    restart: unless-stopped
+
+networks:
+  siked_edge:
+    driver: bridge
+  siked_core:
+    driver: bridge
+    internal: true                       # <<< sem rota para host/internet (contenção)
+  siked_mgmt:
+    driver: bridge
+
+volumes:
+  siked_data:
+  ollama_models:

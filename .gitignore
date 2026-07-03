@@ -1,0 +1,40 @@
+# deps
+node_modules/
+**/node_modules/
+
+# build
+dist/
+build/
+**/dist/
+*.tsbuildinfo
+
+# env / secrets (nunca commitar segredos reais)
+.env
+.env.local
+*.local
+
+# dados de runtime (custódia / índice gerados)
+data/
+*.jsonl
+*.sqlite
+*.sqlite-journal
+*.db
+
+# logs
+logs/
+*.log
+
+# frontend (Vite)
+dashboard/ui/dist/
+.vite/
+
+# SO / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# artefatos de scan
+.trivycache/
+gitleaks-report.json
+semgrep-report.json
