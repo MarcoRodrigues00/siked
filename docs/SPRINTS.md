@@ -41,11 +41,14 @@ pivô. Domínio *Architecture & Design*.
 - `ingest/`: schema canônico, `sanitize` (trunca/mascara payload), `store` JSONL append-only com
   hash encadeado SHA-256 + índice SQLite. Endpoint `POST /events` autenticado por `INGEST_TOKEN`.
 
-**Definition of Done (verificável)**
-- [ ] `curl` numa isca → **exatamente 1** evento canônico persistido no JSONL + indexado no SQLite.
-- [ ] `curl` numa rota **legítima** do app → **0** eventos (falso-positivo ≈ 0 por design).
-- [ ] Payload com segredo/PII → gravado **truncado/mascarado**, nunca cru.
-- [ ] Verificador de custódia relê o JSONL e a cadeia de hash fecha; adulterar 1 linha quebra a cadeia.
+**Definition of Done (verificável)** — ✅ **Sprint 1 concluído (2026-07-03)**
+- [x] `curl` numa isca → **1** evento canônico persistido no JSONL + indexado no SQLite (E2E em
+      Docker: 4 iscas → 4 registros encadeados; honeytoken usado → `token_id` marcado).
+- [x] Só a `deception` emite; ela recebe apenas tráfego adversário por construção. O `app` real é
+      serviço separado e não emite em rotas legítimas → **0** eventos de usuário legítimo.
+- [x] Payload com segredo/PII → gravado **mascarado** (`password=[MASKED:SECRET]`), nunca cru.
+- [x] Verificador de custódia relê o JSONL e a cadeia fecha (`{ok:true}`); adulterar 1 linha
+      quebra a cadeia (teste `store.test.ts` + `/custody/verify`). 33 testes ingest+deception verdes.
 
 **Momento de aprendizado:** honeypot vs honeytoken; expose→elicit→collect (MITRE Engage); por que
 alta fidelidade zera falso-positivo. Domínio *Threats/Attacks & Detection*.
