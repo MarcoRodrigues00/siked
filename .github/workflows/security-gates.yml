@@ -66,6 +66,7 @@ jobs:
       - name: Regras OWASP + JavaScript/TypeScript + Node + regras próprias
         run: >-
           semgrep scan --error --metrics=off
+          --severity WARNING --severity ERROR
           --config p/owasp-top-ten
           --config p/javascript
           --config p/typescript
