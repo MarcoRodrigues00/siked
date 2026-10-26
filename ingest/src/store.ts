@@ -139,6 +139,7 @@ export class Store {
         return { ok: false, records: lines.length, brokenAt: seq, reason: 'prev_hash não encadeia' };
       }
       const recomputed = computeHash(prev_hash, event);
+      // nosemgrep: ajinabraham.njsscan.crypto.timing_attack_node.node_timing_attack -- compara hashes públicos da cadeia de custódia, não um segredo
       if (recomputed !== hash) {
         return { ok: false, records: lines.length, brokenAt: seq, reason: 'hash não confere (adulteração)' };
       }
