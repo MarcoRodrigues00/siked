@@ -15,7 +15,8 @@ COPY ingest/package.json ingest/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY ingest/tsconfig.json ./
 COPY ingest/src ./src
-RUN npm run build
+# compila e descarta as devDependencies antes de copiar node_modules para o runtime
+RUN npm run build && npm prune --omit=dev
 
 # ---- runtime ----
 FROM node:22-slim AS runtime
