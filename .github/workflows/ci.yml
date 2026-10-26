@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test (${{ matrix.service }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [shared, app, deception, detection, ingest, traffic-generator, dashboard]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Build do pacote shared (dependência local de ingest e detection)
+        working-directory: shared
+        run: npm ci --no-audit --no-fund && npm run build
+
+      - name: Instalar dependências
+        working-directory: ${{ matrix.service }}
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck
+        working-directory: ${{ matrix.service }}
+        run: npm run typecheck
+
+      - name: Testes
+        working-directory: ${{ matrix.service }}
+        run: npm test
+
+      - name: Build
+        working-directory: ${{ matrix.service }}
+        run: npm run build
+
+  dashboard-ui:
+    name: build (dashboard UI)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Build da UI (React + Vite)
+        working-directory: dashboard/ui
+        run: npm ci --no-audit --no-fund && npm run build

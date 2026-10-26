@@ -1,4 +1,4 @@
-# 🕸️ PLANO_siked.md — Plano de Arquitetura
+# 🕸️ PLANO — Plano de Arquitetura do siked
 
 > **Status:** plano (sem código ainda). Próximo passo = esqueleto de código no Vibez.
 > **Autor do briefing:** Marco · **Escopo:** 1–2 semanas · **Posicionamento:** AppSec / DevSecOps (SOC como porta de entrada)
@@ -25,8 +25,8 @@ Estes princípios vêm direto das referências da Seção 4 do briefing e govern
 3. **Baixa interação = seguro e escalável.** Simular a *aparência* de serviços (login/admin/API falsos) sem rodar sistema real por trás. Menor superfície de ataque, contenção trivial. Não emular sistemas completos.
 4. **Honeypot ≠ honeytoken — usar os dois em camadas.** Honeypot = endpoint/serviço falso. Honeytoken = dado falso (credencial/chave/arquivo) que dispara alerta quando **usado**. `siked` usa ambos, em camadas diferentes.
 5. **Detecção amarrada a resposta (D3FEND).** Cada detecção mapeia para uma contramedida defensiva concreta (ex.: isolar IP, bloquear sessão), mesmo que a resposta seja simulada/*SOAR-like* na demo.
-6. **Segurança do próprio honeypot é ponto de maturidade.** Rede Docker dedicada, sem rota para rede interna, contenção documentada. Um honeypot mal isolado vira pivô para o atacante — documentar o isolamento é diferencial em entrevista.
-7. **Enriquecimento por IA (tendência 2026).** Camada opcional *SOAR-like* que resume/classifica eventos com LLM — encaixa no lado *agentic* do Marco e diferencia o portfólio, mas **nunca** é o que decide a detecção (a regra determinística decide; a IA só enriquece/explica).
+6. **Segurança do próprio honeypot é ponto de maturidade.** Rede Docker dedicada, sem rota para rede interna, contenção documentada. Um honeypot mal isolado vira pivô para o atacante — por isso o isolamento é documentado e testado.
+7. **Enriquecimento por IA (tendência 2026).** Camada opcional *SOAR-like* que resume/classifica eventos com LLM — mas **nunca** é o que decide a detecção (a regra determinística decide; a IA só enriquece/explica).
 
 ---
 
@@ -55,7 +55,7 @@ Consome o stream normalizado e aplica **regras determinísticas** que classifica
 - **Camada IA opcional (enriquecimento, não decisão):** um resumo em linguagem natural do incidente e uma sugestão de resposta, gerados por LLM local, anexados ao alerta. A detecção em si continua determinística.
 
 ### Camada 5 — Dashboard ao vivo (`dashboard/`)
-Servidor **WebSocket** que faz push dos alertas para uma UI em tempo real (compatível com o fluxo Vibez/AgentHub do Marco). Mostra: feed de eventos ao vivo, mapa de calor de técnicas ATT&CK, contadores (detecções únicas, IPs distintos, cobertura ATT&CK), e o **MTTD** por incidente. Um botão "resposta" (simulada) demonstra o gancho D3FEND/SOAR: "bloquear IP", "isolar sessão".
+Servidor **WebSocket** que faz push dos alertas para uma UI em tempo real. Mostra: feed de eventos ao vivo, mapa de calor de técnicas ATT&CK, contadores (detecções únicas, IPs distintos, cobertura ATT&CK), e o **MTTD** por incidente. Um botão "resposta" (simulada) demonstra o gancho D3FEND/SOAR: "bloquear IP", "isolar sessão".
 
 ### Camada 6 — Pipeline DevSecOps (`.github/workflows/` + `security/`)
 GitHub Actions com *security gates* que **bloqueiam merge**. Cada gate é calibrado para pegar pelo menos uma vulnerabilidade plantada (Seção 5). Ordem: lint/build → SAST → SCA/deps → secret scan → container scan → IaC/Dockerfile lint → testes de segurança. Herda o padrão de CI + suíte de testes de segurança do ClinicBridge (64 testes) e do `ai-pentest-lab` (suíte automatizada, 232 checks).
@@ -126,7 +126,7 @@ Regra de ouro de contenção: a rede das iscas **nunca** alcança a rede interna
 
 ## 4. Mapa de referência conceitual (aplicação construída do zero)
 
-> **Decisão de projeto:** o `siked` é escrito **do zero**. **Não** se copia código do `portal-academico-seguro` nem de nenhum outro projeto. Os repositórios existentes servem só como **referência conceitual** — decisões de arquitetura e padrões que o Marco **re-implementa por conta própria** (aprende fazendo). Isto mantém o repo limpo, sem herança de licença/estilo alheios, e transforma cada padrão num exercício de domínio real — o que rende mais em entrevista do que colar código pronto.
+> **Decisão de projeto:** o `siked` é escrito **do zero**. **Não** se copia código do `portal-academico-seguro` nem de nenhum outro projeto. Os repositórios existentes servem só como **referência conceitual** — decisões de arquitetura e padrões que o Marco **re-implementa por conta própria** (aprende fazendo). Isto mantém o repo limpo, sem herança de licença/estilo alheios, e transforma cada padrão num exercício de domínio real — em vez de colar código pronto.
 
 Inventário real feito na pasta `Ciber`. Os repositórios estão em `ExpCriativa 5 periodo/repos-publicos/`; ClinicBridge está como documentação-mestre. A coluna final descreve **o que aprender / re-derivar**, nunca "copiar".
 

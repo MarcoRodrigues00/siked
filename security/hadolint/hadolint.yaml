@@ -1,0 +1,2 @@
+# Gate de Dockerfile: qualquer aviso (warning) ou erro falha o CI.
+failure-threshold: warning

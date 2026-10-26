@@ -4,21 +4,23 @@
   "private": true,
   "type": "module",
   "description": "siked — dashboard ao vivo (camada 5): WebSocket + UI React.",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "build:ui": "npm --prefix ui install --no-audit --no-fund && npm --prefix ui run build",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "express": "^4.21.2",
     "ioredis": "^5.4.2",
     "winston": "^3.17.0",
     "ws": "^8.18.0",
-    "zod": "^3.24.1"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

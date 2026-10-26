@@ -91,7 +91,7 @@ export class Engine {
     const mttd = Math.max(0, p.detectedMs - Date.parse(p.firstTs));
 
     return Alert.parse({
-      id: createHash('sha1').update(`${p.ruleId}|${p.srcIp}|${p.detectedTs}`).digest('hex').slice(0, 16),
+      id: createHash('sha256').update(`${p.ruleId}|${p.srcIp}|${p.detectedTs}`).digest('hex').slice(0, 16),
       src_ip: p.srcIp,
       decision: {
         rule_id: p.ruleId,

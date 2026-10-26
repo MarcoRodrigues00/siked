@@ -1,0 +1,17 @@
+# Configuração do gate de segredos (Gitleaks).
+# Usa todas as regras padrão e libera SOMENTE valores falsos plantados de propósito.
+# Qualquer outro segredo, inclusive uma chave AWS real com o mesmo formato, continua falhando o CI.
+
+title = "siked"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Honeytokens falsos do siked e fixtures de teste (não são credenciais reais)"
+regexes = [
+  # Honeytoken: chave AWS falsa servida pelo /.env da isca. Contém XMPLE/SIKED de propósito.
+  '''AKIAZ3XMPLE7SIKED42Q''',
+  # Fixture do teste de sanitização: JWT sintético, sem assinatura válida.
+  '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0In0\.abc123DEF456ghi789''',
+]
