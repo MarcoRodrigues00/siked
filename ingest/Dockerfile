@@ -30,7 +30,9 @@ COPY --from=build /repo/ingest/dist ./ingest/dist
 
 # /data pertence ao node: o volume nomeado herda esse dono no 1º mount,
 # permitindo a escrita da custódia rodando como não-root.
-RUN mkdir -p /data && chown node:node /data
+# runtime não precisa de npm/yarn: removidos para reduzir superfície de ataque
+RUN mkdir -p /data && chown node:node /data \
+  && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
 VOLUME /data
 
 USER node

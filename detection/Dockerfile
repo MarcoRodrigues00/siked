@@ -30,6 +30,9 @@ COPY --from=build /repo/detection/dist ./detection/dist
 COPY detection/rules ./detection/rules
 COPY mappings ./mappings
 
+# runtime não precisa de npm/yarn: removidos para reduzir superfície de ataque
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
+
 USER node
 EXPOSE 8082
 

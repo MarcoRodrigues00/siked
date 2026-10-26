@@ -23,7 +23,9 @@ ENV NODE_ENV=production
 ENV UI_DIR=/app/ui/dist
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
+# runtime não precisa de npm/yarn: removidos para reduzir superfície de ataque (e os CVEs que vêm junto)
+RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force \
+  && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
 COPY --from=server /app/dist ./dist
 COPY --from=ui /app/ui/dist ./ui/dist
 

@@ -15,7 +15,9 @@ FROM node:22-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev && npm cache clean --force
+# runtime não precisa de npm/yarn: removidos para reduzir superfície de ataque (e os CVEs que vêm junto)
+RUN npm ci --omit=dev && npm cache clean --force \
+  && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
 COPY --from=build /app/dist ./dist
 
 # usuário não-root (o `node` já existe na imagem oficial)
