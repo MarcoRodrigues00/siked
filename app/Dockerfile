@@ -2,7 +2,7 @@
 # A versão VULNERÁVEL (V5: root + latest + sem USER) é plantada em Sprint 3, isolada.
 
 # ---- build ----
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
@@ -11,7 +11,7 @@ COPY src ./src
 RUN npm run build
 
 # ---- runtime ----
-FROM node:20-alpine AS runtime
+FROM node:22-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 COPY package.json package-lock.json* ./
