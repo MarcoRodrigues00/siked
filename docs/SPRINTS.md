@@ -1,6 +1,6 @@
 # 🗺️ SPRINTS — siked
 
-Refinamento executável do roadmap do `PLANO_siked.md` §7. Cada sprint tem **entregáveis**, uma
+Refinamento executável do roadmap do [`PLANO.md`](PLANO.md) §7. Cada sprint tem **entregáveis**, uma
 **Definition of Done verificável** (um comando/teste que prova a entrega) e o **momento de
 aprendizado** que amarra ao posicionamento AppSec/DevSecOps/SOC + Security+ (SY0-701).
 
