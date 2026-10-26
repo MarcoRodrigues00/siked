@@ -1,0 +1,62 @@
+rules:
+  - id: siked-no-stack-trace-in-response
+    message: >-
+      Stack trace enviado na resposta HTTP. Isso vaza caminhos internos e versões
+      (OWASP A05). Logue o erro no servidor e devolva uma mensagem genérica.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      cwe: "CWE-209: Generation of Error Message Containing Sensitive Information"
+      owasp: "A05:2021 - Security Misconfiguration"
+    pattern-either:
+      - pattern: $RES.send(<... $ERR.stack ...>)
+      - pattern: $RES.json(<... $ERR.stack ...>)
+      - pattern: $RES.status(...).send(<... $ERR.stack ...>)
+      - pattern: $RES.status(...).json(<... $ERR.stack ...>)
+
+  - id: siked-sqlite-sql-built-from-template
+    message: >-
+      SQL montado com template string e interpolação. Use placeholders (?) do
+      better-sqlite3 para evitar SQL injection (OWASP A03).
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      cwe: "CWE-89: Improper Neutralization of Special Elements used in an SQL Command"
+      owasp: "A03:2021 - Injection"
+    pattern-either:
+      - pattern: $DB.prepare(`...${$X}...`)
+      - pattern: $DB.exec(`...${$X}...`)
+
+  - id: siked-no-shell-exec
+    message: >-
+      Execução de comando via shell. Nenhum serviço do siked precisa disso; se for
+      inevitável, use execFile com argumentos fixos (OWASP A03, command injection).
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      cwe: "CWE-78: Improper Neutralization of Special Elements used in an OS Command"
+      owasp: "A03:2021 - Injection"
+    pattern-either:
+      - pattern: child_process.exec(...)
+      - pattern: child_process.execSync(...)
+      - pattern: |
+          import { ..., exec, ... } from 'child_process';
+      - pattern: |
+          import { ..., exec, ... } from 'node:child_process';
+      - pattern: |
+          import { ..., execSync, ... } from 'child_process';
+      - pattern: |
+          import { ..., execSync, ... } from 'node:child_process';
+
+  - id: siked-no-eval
+    message: >-
+      eval/new Function executa texto como código. Em um sistema que recebe tráfego
+      adversário por definição, isso é RCE esperando acontecer.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      cwe: "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code"
+      owasp: "A03:2021 - Injection"
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)

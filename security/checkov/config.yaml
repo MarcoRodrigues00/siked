@@ -1,0 +1,10 @@
+# Gate de configuração: Dockerfiles e os próprios workflows do GitHub Actions.
+# Exceções pontuais ficam inline no arquivo, com justificativa (ex.: checkov:skip=... no traffic-generator).
+directory:
+  - .
+framework:
+  - dockerfile
+  - github_actions
+compact: true
+quiet: true
+skip-download: true
