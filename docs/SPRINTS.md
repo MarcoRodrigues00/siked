@@ -93,9 +93,10 @@ Domínio *Security Operations*.
 - As 10 vulnerabilidades plantadas (PLANO §5), isoladas por flag/branch.
 - `security/PLANTED_VULNS.md` (tabela vuln × gate + como reproduzir).
 
-**Definition of Done (verificável)**
-- [ ] PR com as vulns → pipeline **falha nos gates certos** e bloqueia merge.
-- [ ] Remover as vulns → pipeline **passa** (100% verde no branch limpo).
+**Definition of Done (verificável)** — 🟡 **Sprint 3 parcial (2026-10-26):** pipeline e gates prontos; faltam as vulns plantadas.
+- [x] `ci.yml` (typecheck, 69 testes e build por serviço) e `security-gates.yml` (Gitleaks, Semgrep com 4 regras próprias, Trivy fs e image, `npm audit`, Hadolint e Checkov) rodando em todo push e PR.
+- [x] Branch limpo → pipeline **100% verde**. Para chegar lá: CVEs de produção zerados (express, proxy-addr, qs, js-yaml, migração para zod 4), Node 22 LTS, npm e devDependencies fora das imagens de runtime.
+- [ ] PR com as vulns → pipeline **falha nos gates certos** e bloqueia merge (exige proteção de branch com status checks obrigatórios).
 - [ ] Cada uma das 10 vulns tem um teste "vuln presente → gate esperado falha".
 
 **Momento de aprendizado:** shift-left; cada classe de gate (SAST/SCA/secret/container/IaC) pega
