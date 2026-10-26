@@ -71,6 +71,11 @@ jobs:
           --config p/typescript
           --config p/nodejsscan
           --config security/semgrep
+          --sarif-output=semgrep.sarif
+
+      - name: Anotar achados no PR
+        if: failure()
+        run: python3 security/scripts/sarif_to_annotations.py semgrep.sarif
 
   dependencies:
     name: Dependências (Trivy fs)
@@ -89,7 +94,11 @@ jobs:
           tar xzf trivy.tgz trivy
 
       - name: CVEs HIGH/CRITICAL com correção disponível
-        run: '"$RUNNER_TEMP/trivy" fs --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --no-progress .'
+        run: '"$RUNNER_TEMP/trivy" fs --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --no-progress --format sarif --output trivy-fs.sarif .'
+
+      - name: Anotar achados no PR
+        if: failure()
+        run: python3 security/scripts/sarif_to_annotations.py trivy-fs.sarif
 
   npm-audit:
     name: npm audit (${{ matrix.service }})
@@ -177,4 +186,8 @@ jobs:
       - name: CVEs HIGH/CRITICAL com correção disponível na imagem
         env:
           SERVICE: ${{ matrix.service }}
-        run: '"$RUNNER_TEMP/trivy" image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --no-progress "siked-${SERVICE}:ci"'
+        run: '"$RUNNER_TEMP/trivy" image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --no-progress --format sarif --output trivy-image.sarif "siked-${SERVICE}:ci"'
+
+      - name: Anotar achados no PR
+        if: failure()
+        run: python3 security/scripts/sarif_to_annotations.py trivy-image.sarif
